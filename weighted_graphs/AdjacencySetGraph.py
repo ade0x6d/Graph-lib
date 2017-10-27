@@ -2,7 +2,7 @@
 the Graph is a list of Nodes and every Node have an ID and a dict for all the connections"""
 from collections import defaultdict
 from Graph import *
-from queue import Queue
+from queue import PriorityQueue
 
 
 class Node:
@@ -37,9 +37,6 @@ class AdjacencySetGraph(Graph):
     def add_edge(self, v1, v2, weight=1):
         if v1 >= self.num_vertices or v2 >= self.num_vertices or v1 < 0 or v2 < 0:
             raise ValueError("vertices %d or %d are out of range" % (v1, v2))
-
-        if weight > 0:
-            raise ValueError("The wight must be positive")
 
         self.vertex_list[v1].add_edge(v2, weight)
 
@@ -79,11 +76,11 @@ def build_distance_table(graph, source):
     distance_table = {i: (None, None) for i in range(graph.num_vertices)}
     distance_table[source] = (0, source)
 
-    queue = Queue()
-    queue.put(source)
+    priority_queue = PriorityQueue()
+    priority_queue.put(source)
 
-    while not queue.empty():
-        current_vertex = queue.get()
+    while not priority_queue.empty():
+        current_vertex = priority_queue.get()
         current_distance = distance_table[current_vertex][0]
 
         for neighbor in graph.get_adjacent_vertices(current_vertex):
@@ -92,7 +89,7 @@ def build_distance_table(graph, source):
                 distance_table[neighbor] = (w, current_vertex)
 
                 if len(graph.get_adjacent_vertices(neighbor)):
-                    queue.put(neighbor)  # I need a priority queue
+                    priority_queue.put(neighbor)
 
     return distance_table
 
